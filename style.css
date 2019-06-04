@@ -1,0 +1,207 @@
+/* ========== CSS 全區設定 ========== */
+/*公版內容開始，排版用class，標註特定位置用id*/
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  padding: 0px;
+  margin: 0px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
+}
+
+* {
+  /*border-box：實際寬高＝所設定的數值(已包含border和padding)*/
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0px;
+  padding: 0px;
+  margin-bottom:5px;
+}
+
+ul, ol {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+/*a, a:hover, a:focus {
+  margin: 0px;
+  padding: 0px;
+  text-decoration: none;
+}*/
+
+img {
+  height: auto;
+  display: block;
+}
+
+.container{
+  max-width:1170px;
+  margin:0px;
+  padding: 5px 0px;
+}
+
+.session{
+  max-width: 1170px;
+  margin: 5px 5px;
+}
+
+/*清除浮動效果，讓高度出現，方法II*/
+.clearfix:after{
+  visibility: hidden;
+  display: block;
+  font-size: 0;
+  content: " ";
+  clear: both;
+  height: 0;
+}
+
+/*Search and Title*/
+.session:first-child{
+    width: 100%;
+  }
+.session:first-child h3{
+  font-size:32px;
+  text-align: center;
+}
+.session:first-child nav .form-inline{
+  text-align: center;
+  margin: 0 auto;
+  max-width:100%;
+}
+.session:first-child nav .form-control{
+  width: 300px;
+}
+
+#ipInfo{
+  background-color: rgb(226, 226, 226);
+  text-align: center;
+}
+
+#ipInfo p:first-child{
+  margin:5px 0px;
+}
+
+#more{
+ margin-left:16px;
+ font-size:16px;
+ height:36px;
+}
+
+/*Display Cards*/
+.display{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content: center;
+}
+
+.card{
+  margin:5px 0px;
+}
+
+.card-img-top{
+  display:block;
+  width:50px;
+  height:50px;
+  margin:auto;
+  margin-top:10px;
+}
+
+.card-body .card-title, .card-body .card-text{
+  text-align: center;
+}
+
+/*GOOGLE MAP*/
+#map{
+  height:300px;
+}
+
+/*RWD*/
+@media (max-width:374px){
+  .session:first-child{
+    width: 100%;
+  }
+  .session:first-child h3{
+    font-size:20px;
+    text-align: center;
+  }
+  .session:first-child nav .form-control{
+    text-align: center;
+    display:block;
+    margin: 0 auto;
+    width:100%;
+  }
+  .session:first-child nav .btn{
+    display:block;
+    text-align: center;
+    margin: 0px auto;
+  } 
+  #ipInfo{
+    text-align:center;
+  }
+  #ipInfo span:first-child{
+    display:none;
+  }
+}
+
+@media (min-width:375px) and (max-width:410px){
+  .session:first-child{
+    width: 100%;
+  }
+  .session:first-child h3{
+    text-align: center;
+    font-size:24px;
+  }
+  .session:first-child nav .form-control{
+    width:250px;
+  }
+  .session:first-child nav .btn{
+    margin-left:5px;
+  }
+  #ipInfo{
+    text-align:center;
+  }
+  #ipInfo span:first-child{
+    display:none;
+  }
+  #more{
+    display:block;
+    margin: 0px auto;
+  }
+}
+
+@media (min-width:411px) and (max-width:575px){
+  .session:first-child{
+    width: 100%;
+  }
+  .session:first-child h3{
+    text-align: center;
+    font-size:26px;
+  }
+  .session:first-child nav .form-control{
+    width:260px;
+  }
+  .session:first-child nav .btn{
+    margin-left:5px;
+  }
+  #ipInfo{
+    text-align:center;
+  }
+  #ipInfo span:first-child{
+    display:none;
+  }
+  #more{
+    display:block;
+    margin: 0px auto;
+  }
+  #search{
+    margin-right:5px;
+  }
+}
