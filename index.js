@@ -1,5 +1,4 @@
 const LOC_URL = 'https://ssl.geoplugin.net/json.gp?k=7b14a388b4ddd6e3'
-const mapBase_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522,151.1957362&rankby=distance&type=food&key='
 const mapLOC = document.querySelector('#map')
 const ipInfo = document.querySelector('#ipInfo')
 const dataPanel = document.querySelector('#panel')
