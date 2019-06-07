@@ -12,10 +12,10 @@ const ITEM_PER_PAGE = 6
 let paginationData = []
 
 //載入時啟動
-getIP()
+getGPS()
 getCurrency_and_Place()
 //取得IP位置
-function getIP() {
+function getGPS() {
   const options = {
     enableHighAccuracy: true,
     timeout: 5000,
