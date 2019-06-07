@@ -13,8 +13,29 @@ let paginationData = []
 
 //載入時啟動
 getIP()
+getCurrency_and_Place()
 //取得IP位置
 function getIP() {
+  //取得GPS定位
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
+  } else {
+    console.log("您的瀏覽器不支援GPS定位")
+  }
+
+  function successCallback(position) {
+    var latitude = position.coords.latitude
+    var longitude = position.coords.longitude
+    console.log("緯度：" + latitude + "經度：" + longitude)
+    initMap(latitude, longitude, radius)
+  }
+
+  function errorCallback(error) {
+    console.log(error) // PositionError {code: 1, message: "User denied Geolocation"}
+  }
+}
+
+function getCurrency_and_Place() {
   axios
     .get(LOC_URL)
     .then(location => {
@@ -23,9 +44,6 @@ function getIP() {
       const defaultCurrency = location.data.geoplugin_currencyCode
       const yourCountry = location.data.geoplugin_countryName
       const region = location.data.geoplugin_regionName
-      const latitude = location.data.geoplugin_latitude
-      const longitude = location.data.geoplugin_longitude
-      initMap(latitude, longitude, radius)
       displayIP(yourCountry, region, IP, defaultCurrency)
     })
     .catch((error) => console.log(error))
