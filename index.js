@@ -16,9 +16,15 @@ getIP()
 getCurrency_and_Place()
 //取得IP位置
 function getIP() {
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 120000, //最多保留2分鐘
+  }
+
   //取得GPS定位
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback)
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options)
   } else {
     console.log("您的瀏覽器不支援GPS定位")
   }
