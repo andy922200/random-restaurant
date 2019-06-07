@@ -19,7 +19,7 @@ function getGPS() {
   const options = {
     enableHighAccuracy: true,
     timeout: 5000,
-    maximumAge: 120000, //最多保留2分鐘
+    maximumAge: 180000, //最多保留3分鐘
   }
 
   //取得GPS定位
@@ -109,22 +109,26 @@ function NearbySearchCallback(results, status, pagination) {
 function displayIP(yourCountry, region, IP, defaultCurrency) {
   let IPHtmlContent = ''
   let countryHtmlContent = ''
-  IPHtmlContent = `
+  if (region !== undefined) {
+    IPHtmlContent = `
       <span>您的IP位置是 ${IP}</span>
     `
-  ipInfo.innerHTML += IPHtmlContent
-  if (defaultCurrency !== null) {
-    countryHtmlContent = `
+    ipInfo.innerHTML += IPHtmlContent
+    if (defaultCurrency !== null) {
+      countryHtmlContent = `
       <p>您在：${region}, ${yourCountry}</p>
       <p>貨幣單位為：${defaultCurrency}</p>
     `
-  } else {
-    countryHtmlContent = `
+    } else {
+      countryHtmlContent = `
       <p>您在： ${region}, ${yourCountry}</p>
       <p>貨幣單位為：USD</p>
     `
+    }
+    ipInfo.innerHTML += countryHtmlContent
+  } else {
+    ipInfo.innerHTML = '' //若無完整資料，寫入空白資料
   }
-  ipInfo.innerHTML += countryHtmlContent
 }
 
 //計算總共頁數
@@ -155,7 +159,7 @@ function getPageData(pageNum, results) {
     `
   }
   for (let i = 0; i < pageData.length; i++) {
-    //onsole.log(pageData)
+    //console.log(pageData)
     if (!pageData[i].photos || !pageData[i].opening_hours) {
       delete pageData[i]
     }
