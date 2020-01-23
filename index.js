@@ -1,108 +1,55 @@
-const LOC_URL = 'https://ssl.geoplugin.net/json.gp?k=7b14a388b4ddd6e3'
+const LOC_URL = 'http://www.geoplugin.net/json.gp'
 const mapLOC = document.querySelector('#map')
 const ipInfo = document.querySelector('#ipInfo')
 const dataPanel = document.querySelector('#panel')
 const paginationLocal = document.querySelector('#pagination')
 const search = document.querySelector('#search')
 const more = document.querySelector('#more')
-const radius = 1500
-const type = 'restaurant'
-const key = 'AIzaSyDunXykyoL8RJ97753IG7xoE305iQzXkoU'
 const ITEM_PER_PAGE = 6
+const radius = 1500
 let paginationData = []
 
-//載入時啟動
-getGPS()
-getCurrency_and_Place()
 //取得IP位置
 function getGPS() {
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 180000, //最多保留3分鐘
-  }
-
-  //取得GPS定位
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options)
-  } else {
-    console.log("您的瀏覽器不支援GPS定位")
-  }
-
-  function successCallback(position) {
-    var latitude = position.coords.latitude
-    var longitude = position.coords.longitude
-    console.log("緯度：" + latitude + "經度：" + longitude)
-    initMap(latitude, longitude, radius)
-  }
-
-  function errorCallback(error) {
-    console.log(error) // PositionError {code: 1, message: "User denied Geolocation"}
-  }
-}
-
-function getCurrency_and_Place() {
-  axios
-    .get(LOC_URL)
-    .then(location => {
-      //console.log(location)
-      const IP = location.data.geoplugin_request
-      const defaultCurrency = location.data.geoplugin_currencyCode
-      const yourCountry = location.data.geoplugin_countryName
-      const region = location.data.geoplugin_regionName
-      displayIP(yourCountry, region, IP, defaultCurrency)
-    })
-    .catch((error) => console.log(error))
-}
-
-//產生Google地圖取得餐廳資料,記得要載入Google api Library 
-function initMap(latitude, longitude, radius) {
-  // Initial position
-  let initialPosition = new google.maps.LatLng(latitude, longitude)
-  // to create the map
-  let map = new google.maps.Map(document.getElementById('map'), {
-    center: initialPosition,
-    zoom: 13
-  });
-  // the request for nearbySearch()
-  let request = {
-    location: initialPosition,
-    radius: radius,
-    types: ['bakery', 'cafe', 'supermarket', 'restaurant']
-  };
-  // to do the nearbySearch() request to found types around the initial position
-  let service = new google.maps.places.PlacesService(map)
-  service.nearbySearch(request, NearbySearchCallback)
-}
-// This function is called when nearbySearch() has done
-function NearbySearchCallback(results, status, pagination) {
-  getTotalPages(results)
-  getPageData(1, results)
-  //search 監聽器
-  search.addEventListener('click', event => {
-    event.preventDefault()
-    let input = searchInput.value
-    let chosenPlaces = []
-    //console.log(input)
-    const regex = new RegExp(input, 'i')
-    chosenPlaces = results.filter(place => place.name.match(regex))
-    //console.log(chosenPlaces)
-    getTotalPages(chosenPlaces)
-    getPageData(1, chosenPlaces)
-    //有時間差問題，所以按下後不清空輸入值
+  let result = { latitude: 0, longitude: 0 }
+  return new Promise((resolve, reject) => {
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 180000, //最多保留3分鐘
+    }
+    //取得GPS定位
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options)
+    } else {
+      console.log("您的瀏覽器不支援GPS定位")
+    }
+    function successCallback(position) {
+      result.latitude = position.coords.latitude
+      result.longitude = position.coords.longitude
+      resolve(result)
+    }
+    function errorCallback(error) {
+      console.log(error) // PositionError {code: 1, message: "User denied Geolocation"}
+    }
   })
-  if (status == google.maps.places.PlacesServiceStatus.OK) {
-    //more 監聽器
-    more.addEventListener('click', event => {
-      event.preventDefault()
-      if (pagination.hasNextPage) {
-        sleep: 2;
-        pagination.nextPage()
-      } else {
-        more.disabled = true
-      }
-    })
-  }
+}
+
+// 取得IP對應實體位置和貨幣資料
+function getCurrency_and_Place() {
+  let result = { IP: '', defaultCurrency: '', yourCountry: '', region: '' }
+  return new Promise((resolve, reject) => {
+    axios
+      .get(LOC_URL)
+      .then(location => {
+        result.IP = location.data.geoplugin_request
+        result.defaultCurrency = location.data.geoplugin_currencyCode
+        result.yourCountry = location.data.geoplugin_countryName
+        result.region = location.data.geoplugin_regionName
+        resolve(result)
+      })
+      .catch((error) => console.log(error))
+  })
 }
 
 /*顯示IP Address & 所在地區*/
@@ -131,6 +78,59 @@ function displayIP(yourCountry, region, IP, defaultCurrency) {
   }
 }
 
+//產生Google地圖取得餐廳資料,記得要載入Google api Library 
+function initMap(latitude, longitude, radius) {
+  // Initial position
+  if ((latitude === undefined) || (longitude === undefined)) {
+    mapLOC.innerHTML = `<span>Waiting......</span>`
+  } else {
+    let initialPosition = new google.maps.LatLng(latitude, longitude)
+    // to create the map
+    let map = new google.maps.Map(document.getElementById('map'), {
+      center: initialPosition,
+      zoom: 13
+    });
+    // the request for nearbySearch()
+    let request = {
+      location: initialPosition,
+      radius: 1500,
+      types: ['bakery', 'cafe', 'supermarket', 'restaurant'],
+    };
+    // to do the nearbySearch() request to found types around the initial position
+    let service = new google.maps.places.PlacesService(map)
+    service.nearbySearch(request, NearbySearchCallback)
+  }
+}
+
+// This function is called when nearbySearch() has done
+function NearbySearchCallback(results, status, pagination) {
+  getTotalPages(results)
+  getPageData(1, results)
+  //search 監聽器
+  search.addEventListener('click', event => {
+    event.preventDefault()
+    let input = searchInput.value
+    let chosenPlaces = []
+    const regex = new RegExp(input, 'i')
+    chosenPlaces = results.filter(place => place.name.match(regex))
+    getTotalPages(chosenPlaces)
+    getPageData(1, chosenPlaces)
+    //有時間差問題，所以按下後不清空輸入值
+  })
+  if (status == google.maps.places.PlacesServiceStatus.OK) {
+    //more 監聽器
+    more.addEventListener('click', event => {
+      event.preventDefault()
+      if (pagination.hasNextPage) {
+        sleep: 2;
+        pagination.nextPage()
+      } else {
+        more.disabled = true
+      }
+    })
+  }
+}
+
 //計算總共頁數
 function getTotalPages(results) {
   let totalPages = Math.ceil(results.length / ITEM_PER_PAGE) || 1
@@ -145,6 +145,14 @@ function getTotalPages(results) {
   pagination.innerHTML = pageItemContent
 }
 
+//pagination 監聽器
+paginationLocal.addEventListener('click', event => {
+  event.preventDefault()
+  if (event.target.tagName === 'A') {
+    getPageData(event.target.dataset.page)
+  }
+})
+
 //篩選出指定頁面的資料並顯示
 function getPageData(pageNum, results) {
   dataPanel.innerHTML = '' //記得先清空現有內容
@@ -152,14 +160,12 @@ function getPageData(pageNum, results) {
   let offset = (pageNum - 1) * ITEM_PER_PAGE
   let pageData = paginationData.slice(offset, offset + ITEM_PER_PAGE)
   let htmlContent = ''
-  //console.log(paginationData)
   if (paginationData.length === 0) {
     dataPanel.innerHTML = `
       <h3>無資料 QaQ</h3>
     `
   }
   for (let i = 0; i < pageData.length; i++) {
-    //console.log(pageData)
     if (!pageData[i].photos || !pageData[i].opening_hours) {
       delete pageData[i]
     }
@@ -170,15 +176,6 @@ function getPageData(pageNum, results) {
         <div class="card-body">
           <h5 class="card-title">${pageData[i].name}</h5>
       `
-      if (pageData[i].opening_hours.open_now === false) {
-        htmlContent += `
-          <p style="text-align:center">休息中</p>
-      `
-      } else {
-        htmlContent += `
-          <p style="text-align:center">營業中</p>
-      `
-      }
       htmlContent += `
           <p class="card-text">${pageData[i].photos[0].html_attributions[0]} </p>
           <p class="card-text">提供相片</p>
@@ -219,10 +216,13 @@ function getPageData(pageNum, results) {
   dataPanel.innerHTML += htmlContent
 }
 
-//pagination 監聽器
-paginationLocal.addEventListener('click', event => {
-  event.preventDefault()
-  if (event.target.tagName === 'A') {
-    getPageData(event.target.dataset.page)
+(async () => {
+  try {
+    let place = await getCurrency_and_Place()
+    let gpsData = await getGPS()
+    displayIP(place.yourCountry, place.region, place.IP, place.defaultCurrency)
+    initMap(gpsData.latitude, gpsData.longitude, radius)
+  } catch (err) {
+    console.log(err)
   }
-})
+})()
