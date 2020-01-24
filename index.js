@@ -1,4 +1,4 @@
-const LOC_URL = 'http://www.geoplugin.net/json.gp'
+const LOC_URL = 'https://ssl.geoplugin.net/json.gp?k=3471a6499b58b016'
 const mapLOC = document.querySelector('#map')
 const ipInfo = document.querySelector('#ipInfo')
 const dataPanel = document.querySelector('#panel')
